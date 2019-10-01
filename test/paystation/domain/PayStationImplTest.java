@@ -12,6 +12,7 @@
 package paystation.domain;
 
 import java.util.*;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -298,6 +299,4 @@ public class PayStationImplTest {
         Map emptyMap = new HashMap();
         assertEquals(emptyMap, result);
     }
-    
-    
 }
