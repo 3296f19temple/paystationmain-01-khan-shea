@@ -111,4 +111,44 @@ public class PayStationImpl implements PayStation {
         insertedSoFar = 0;
         return total;
     }
+    
+    public static void main(String[] args) throws IllegalCoinException {
+    	Scanner sc = new Scanner(System.in);
+    	PayStation ps = new PayStationImpl();
+    	int choice;
+    	while(true) {
+    		System.out.println("Welcome to Paystation! Select one of the following options\r\n(1) Deposit Coins\r\n(2) Display\r\n(3) Buy Ticket\r\n(4) Cancel\r\n(5) Change Rate Strategy\r\n(6) Quit");
+    		choice = sc.nextInt();
+    		
+    		switch(choice) {
+    			case 1: 
+    				System.out.println("Insert as many coins as you would like to, insert 0 when you're finished");
+	    			int coin = 1;
+	    			while(coin != 0) {
+	    				coin = sc.nextInt();
+	    				if(coin != 0) {
+	    					ps.addPayment(coin);
+	    				} else {
+	    					break;
+	    				}
+	    			}
+	    			break;
+    			case 2: 
+    				System.out.println("You have inserted enough money to buy " + ps.readDisplay() + " minutes");
+    				break;
+    			case 3: 
+    				System.out.println("You have just purchased " + ps.buy().value() + " minutes of parking");
+    				break;
+    			case 4: 
+    				System.out.println("Payment canceled. You have been refunded the amount of " + ps.empty() + " cents");
+    				break;
+    			case 5:
+    				System.out.println("Select:\r\n(1) Alphatown rates\r\n(2) Betatown rates\r\n(3) Gammatown rates");
+    				break;
+    			case 6:
+    				sc.close();
+    				return;
+    		}
+    	}
+    }
 }
