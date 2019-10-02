@@ -1,4 +1,5 @@
 package paystation.domain;
+
 import java.util.*;
 
 /**
@@ -24,55 +25,40 @@ public class PayStationImpl implements PayStation {
     
     private int insertedSoFar;
     private int timeBought;
-    private Map coinMap = new HashMap();
-    private boolean nickleBool = false;
-    private boolean dimeBool = false;
-    private boolean quarterBool = false;
+    private int totalMoney;
+    private int numNickels = 0;
+    private int numDimes = 0;
+    private int numQuarters = 0;
+    private Map<Integer, Integer> coinCount = new HashMap<>();
     
+    private RateStrategy rateStrategy;
+    
+    public PayStationImpl(RateStrategy rateStrategy){
+        this.rateStrategy = rateStrategy;
+    }
+
+    PayStationImpl() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     @Override
     public void addPayment(int coinValue)
             throws IllegalCoinException {
-
         switch (coinValue) {
-            case 5:
-                if(!nickleBool)
-                {
-                    coinMap.put(1, 1);
-                    nickleBool = true;
-                }
-                else
-                {
-                    coinMap.put(1, (int)coinMap.get(1) + 1);
-                    
-                }
+            case 5: 
+                coinCount.put(5, ++numNickels);
                 break;
-            case 10:
-                if(!dimeBool)
-                {
-                    coinMap.put(2, 1);
-                    dimeBool = true;
-                }
-                else
-                {
-                    coinMap.put(2, (int)coinMap.get(2) + 1);
-                }
+            case 10: 
+                coinCount.put(10, ++numDimes);
                 break;
-            case 25:
-                if(!quarterBool)
-                {
-                    coinMap.put(3, 1);
-                    quarterBool = true;
-                }
-                else
-                {
-                    coinMap.put(3, (int)coinMap.get(3) + 1);
-                }
+            case 25: 
+                coinCount.put(25, ++numQuarters);
                 break;
             default:
                 throw new IllegalCoinException("Invalid coin: " + coinValue);
         }
         insertedSoFar += coinValue;
-        timeBought = insertedSoFar / 5 * 2;
+        timeBought = rateStrategy.calculateTime(insertedSoFar);
     }
 
     @Override
@@ -83,32 +69,28 @@ public class PayStationImpl implements PayStation {
     @Override
     public Receipt buy() {
         Receipt r = new ReceiptImpl(timeBought);
+        totalMoney += insertedSoFar;
         reset();
         return r;
     }
 
     @Override
-    public Map<Integer, Integer> cancel() 
-    {
-        Map tempMap =  new HashMap();
-        tempMap.putAll(coinMap);
+    public Map<Integer, Integer> cancel() {
+        HashMap<Integer, Integer> tempMap = new HashMap<>();
+        tempMap.putAll(coinCount);
         reset();
         return tempMap;
     }
     
     private void reset() {
         timeBought = insertedSoFar = 0;
-        nickleBool = false;
-        dimeBool = false;
-        quarterBool = false;
-        coinMap.clear();
+        coinCount.clear();
     }
     
     @Override
-    public int empty()
-    {
-        int total = insertedSoFar;
-        insertedSoFar = 0;
-        return total;
+    public int empty(){
+        int temp = totalMoney;
+        totalMoney = 0;
+        return temp;
     }
 }
